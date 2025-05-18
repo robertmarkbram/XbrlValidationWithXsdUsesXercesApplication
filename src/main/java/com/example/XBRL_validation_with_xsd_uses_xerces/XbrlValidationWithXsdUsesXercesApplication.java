@@ -14,6 +14,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -30,29 +31,16 @@ public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRu
     public void run(final String... args) throws Exception {
         // Compute path to the XBRL payload to be validated.
         validateFile(Path.of("src/main/resources/xbrl/xbrl_001_APRA-valid.xml"));
-        //        validateFile(Path.of("src/main/resources/xbrl/xbrl_003_APRA-has-errors.xml"));
+        validateFile(Path.of("src/main/resources/xbrl/xbrl_003_APRA-has-errors.xml"));
     }
 
     private static void validateFile(final Path xbrlPath) throws SAXException, IOException {
         System.out.println("\n\n========== " + xbrlPath + " ==========");
 
-        final Source xmlStreamSource = new StreamSource(xbrlPath.toFile());
-
+        // Create the schema factory.
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-        final String base = "src/main/resources/xsd/www.xbrl.org/2003/";
-        final String entryPointXsd = "src/main/resources/xsd/sbr.gov.au/taxonomy/sbr_au_reports/sprstrm/sprcnt/sprcnt_0001/sprcnt.0001.conttrans.request.02.02.report.xsd";
-        StreamSource[] xsdSources = new StreamSource[]{
-                new StreamSource(entryPointXsd),
-                new StreamSource(base + "xbrl-linkbase-2003-12-31.xsd"),
-                new StreamSource(base + "xl-2003-12-31.xsd"),
-                new StreamSource(base + "xlink-2003-12-31.xsd"),
-                new StreamSource(base + "xbrl-instance-2003-12-31.xsd")
-        };
-        for (StreamSource s : xsdSources) {
-            s.setSystemId(Path.of(s.getSystemId()).toUri().toString());
-        }
-
+        // Tell the schema factory to use a catalog and resource resolver to use local XSD files.
         final String[] catalogs = {"src/main/resources/xsd/catalog.xml"};
         final XMLCatalogResolver resolver = new XMLCatalogResolver(catalogs) {
             @Override
@@ -71,13 +59,17 @@ public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRu
         };
         schemaFactory.setResourceResolver(resolver);
 
-        final Schema schema = schemaFactory.newSchema(xsdSources);
-
+        // Create the validator using the XSD.
+        final String entryPointXsd = "src/main/resources/xsd/sbr.gov.au/taxonomy/sbr_au_reports/sprstrm/sprcnt/sprcnt_0001/sprcnt.0001.conttrans.request.02.02.report.xsd";
+        final Schema schema = schemaFactory.newSchema(new File(entryPointXsd));
         javax.xml.validation.Validator validator = schema.newValidator();
-
+        
+        // Add an error handler.
         final XsdErrorHandler errorHandler = new XsdErrorHandler(xbrlPath);
         validator.setErrorHandler(errorHandler);
-
+        
+        // Validate and output errors.
+        final Source xmlStreamSource = new StreamSource(xbrlPath.toFile());
         validator.validate(xmlStreamSource);
         if (errorHandler.getErrors().isEmpty()) {
             System.out.println("'" + xbrlPath

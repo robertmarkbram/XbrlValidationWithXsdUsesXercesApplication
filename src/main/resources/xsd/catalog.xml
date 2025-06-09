@@ -42,17 +42,12 @@
    <uri name="http://sbr.gov.au/rprt/sprstrm/sprcnt/sprcnt.0001.private.02.01.module" uri="xsd/sbr.gov.au/taxonomy/sbr_au_reports/sprstrm/sprcnt/sprcnt_0001/sprcnt.0001.private.02.01.module.xsd"/>
    <uri name="http://sbr.gov.au/rprt/sprstrm/sprcnt/sprcnt.0001.private.02.02.module" uri="xsd/sbr.gov.au/taxonomy/sbr_au_reports/sprstrm/sprcnt/sprcnt_0001/sprcnt.0001.private.02.02.module.xsd"/>
 
-   <system systemId="http://www.xbrl.org/2003/xl-2003-12-31.xsd" uri="xsd/www.xbrl.org/2003/xl-2003-12-31.xsd"/>
-   <uri name="http://www.xbrl.org/2003/XLink" uri="xsd/www.xbrl.org/2003/xl-2003-12-31.xsd"/>
-
-   <system systemId="http://www.xbrl.org/2003/xlink-2003-12-31.xsd" uri="xsd/www.xbrl.org/2003/xlink-2003-12-31.xsd"/>
-   <uri name="http://www.w3.org/1999/xlink" uri="xsd/www.xbrl.org/2003/xlink-2003-12-31.xsd"/>
-   
-   <system systemId="http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd" uri="xsd/www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd"/>
-   <uri name="http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd" uri="xsd/www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd"/>
+   <system systemId="http://www.xbrl.org/2003/xl-2003-12-31.xsd" uri="/Users/rob.bram/work/test/XBRL-validation-with-xsd_uses-xerces/src/main/resources/xsd/www.xbrl.org/2003/xl-2003-12-31.xsd"/>
+   <system systemId="http://www.xbrl.org/2003/xlink-2003-12-31.xsd" uri="/Users/rob.bram/work/test/XBRL-validation-with-xsd_uses-xerces/src/main/resources/xsd/www.xbrl.org/2003/xlink-2003-12-31.xsd"/>
+   <system systemId="http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd" uri="/Users/rob.bram/work/test/XBRL-validation-with-xsd_uses-xerces/src/main/resources/xsd/www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd"/>
+   <system systemId="http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd" uri="/Users/rob.bram/work/test/XBRL-validation-with-xsd_uses-xerces/src/main/resources/xsd/www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd"/>
+   <system systemId="http://xbrl.org/2005/xbrldt" uri="/Users/rob.bram/work/test/XBRL-validation-with-xsd_uses-xerces/src/main/resources/xsd/www.xbrl.org/2005/xbrldt-2005.xsd"/>
 
 
-   <uri name="http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd" uri="xsd/www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd"/>
 
-   <uri name="http://xbrl.org/2005/xbrldt" uri="xsd/www.xbrl.org/2005/xbrldt-2005.xsd"/>
 </catalog>

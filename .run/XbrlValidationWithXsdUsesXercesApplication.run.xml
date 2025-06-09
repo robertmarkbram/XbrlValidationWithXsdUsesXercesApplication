@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="XbrlValidationWithXsdUsesXercesApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="XBRL-validation-with-xsd_uses-xerces.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.XBRL_validation_with_xsd_uses_xerces.XbrlValidationWithXsdUsesXercesApplication" />
+    <option name="VM_PARAMETERS" value="-Djava.security.manager -Djava.security.policy==$PROJECT_DIR$/tools/java_policy_for_no-internet.policy" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.example.XBRL_validation_with_xsd_uses_xerces.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

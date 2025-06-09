@@ -82,7 +82,7 @@
    </email1.02.00:ElectronicContactElectronicMail>
    <address3.02.01:AddressDetails>
       <pyde.02.01:AddressDetails.Usage.Code contextRef="CNTRCVR000007">POS</pyde.02.01:AddressDetails.Usage.Code>
-      <pyde.02.00:AddressDetails.Line1.Text contextRef="CNTRCVR000007">Lorem ipsum dolor sit amet consectetur, adipiscing elit at pellentesque vulputate rhoncus, facilisis quisque fames ornare. Mus velit sollicitudin diam neque potenti fringilla, per tortor euismod mauris lacus dis vulputate, dictum curae natoque nam aliquet. Sociosqu vulputate eget nostra feugiat ullamcorper vivamus, orci eu molestie lacus natoque magna tellus, accumsan commodo congue fringilla tempor.</pyde.02.00:AddressDetails.Line1.Text>
+      <pyde.02.00:AddressDetails.Line1.Text contextRef="CNTRCVR000007">PO Box 312</pyde.02.00:AddressDetails.Line1.Text>
       <pyde.02.00:AddressDetails.LocalityName.Text contextRef="CNTRCVR000007">GREEN CLIFFS</pyde.02.00:AddressDetails.LocalityName.Text>
       <pyde.02.00:AddressDetails.Postcode.Text contextRef="CNTRCVR000007">3497</pyde.02.00:AddressDetails.Postcode.Text>
       <pyde.02.00:AddressDetails.StateOrTerritory.Code contextRef="CNTRCVR000007">VIC</pyde.02.00:AddressDetails.StateOrTerritory.Code>

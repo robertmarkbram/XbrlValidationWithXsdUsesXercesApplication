@@ -1,6 +1,8 @@
 package com.example.XBRL_validation_with_xsd_uses_xerces;
 
 import org.apache.xerces.util.XMLCatalogResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +25,8 @@ import java.util.List;
 @SpringBootApplication
 public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRunner {
 
+    private static Logger log = LoggerFactory.getLogger(XbrlValidationWithXsdUsesXercesApplication.class);
+
     public static void main(String[] args) {
         SpringApplication.run(XbrlValidationWithXsdUsesXercesApplication.class, args);
     }
@@ -30,12 +34,13 @@ public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRu
     @Override
     public void run(final String... args) throws Exception {
         // Compute path to the XBRL payload to be validated.
-        validateFile(Path.of("src/main/resources/xbrl/xbrl_001_APRA-valid.xml"));
-        validateFile(Path.of("src/main/resources/xbrl/xbrl_003_APRA-has-errors.xml"));
+        validateFile(Path.of("src/main/resources/xbrl/xbrl_001_valid.xml"));
+        validateFile(Path.of("src/main/resources/xbrl/xbrl_002_invalid-against-Schematron.xml"));
+        validateFile(Path.of("src/main/resources/xbrl/xbrl_003_invalid-against-XSD.xml"));
     }
 
     private static void validateFile(final Path xbrlPath) throws SAXException, IOException {
-        System.out.println("\n\n========== " + xbrlPath + " ==========");
+        log.info("========== {} ==========", xbrlPath);
 
         // Create the schema factory.
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -45,15 +50,15 @@ public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRu
         final XMLCatalogResolver resolver = new XMLCatalogResolver(catalogs) {
             @Override
             public LSInput resolveResource(
-                    final String type,
-                    final String namespaceURI,
-                    final String publicId,
-                    final String systemId,
-                    final String baseURI
+                final String type,
+                final String namespaceURI,
+                final String publicId,
+                final String systemId,
+                final String baseURI
             ) {
                 final LSInput lsInput = super.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
                 final String resolvedSystemId = (lsInput != null) ? lsInput.getSystemId() : "null";
-                System.out.println("Attempted to resolve '" + systemId + "', resolved to: " + resolvedSystemId);
+                log.debug("Attempted to resolve '{}' to '{}'.", systemId, resolvedSystemId);
                 return lsInput;
             }
         };
@@ -63,21 +68,19 @@ public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRu
         final String entryPointXsd = "src/main/resources/xsd/sbr.gov.au/taxonomy/sbr_au_reports/sprstrm/sprcnt/sprcnt_0001/sprcnt.0001.conttrans.request.02.02.report.xsd";
         final Schema schema = schemaFactory.newSchema(new File(entryPointXsd));
         javax.xml.validation.Validator validator = schema.newValidator();
-        
+
         // Add an error handler.
         final XsdErrorHandler errorHandler = new XsdErrorHandler(xbrlPath);
         validator.setErrorHandler(errorHandler);
-        
+
         // Validate and output errors.
         final Source xmlStreamSource = new StreamSource(xbrlPath.toFile());
         validator.validate(xmlStreamSource);
         if (errorHandler.getErrors().isEmpty()) {
-            System.out.println("'" + xbrlPath
-                    + "' is valid against '" + entryPointXsd
-                    + "'.");
+            log.info("'{}' is valid against '{}'.", xbrlPath, entryPointXsd);
         }
         for (SAXParseException error : errorHandler.getErrors()) {
-            System.err.println("Error: " + error.toString());
+            log.error("Error: {}", error.toString());
         }
     }
 
@@ -113,22 +116,22 @@ public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRu
 
         @Override
         public void warning(final SAXParseException exception) {
-            System.err.println("Warning occurred during validation of XML file '" + xmlFile.getFileName() + "': '"
-                    + exception.getMessage() + "'.");
+            log.debug("Warning occurred during validation of XML file '{}': '{}'.", xmlFile.getFileName(),
+                exception.getMessage());
             errors.add(exception);
         }
 
         @Override
         public void error(final SAXParseException exception) {
-            System.err.println("Error occurred during validation of XML file '" + xmlFile.getFileName() + "': '"
-                    + exception.getMessage() + "'.");
+            log.debug("Error occurred during validation of XML file '{}': '{}'.", xmlFile.getFileName(),
+                exception.getMessage());
             errors.add(exception);
         }
 
         @Override
         public void fatalError(final SAXParseException exception) {
-            System.err.println("Fatal error occurred during validation of XML file '" + xmlFile.getFileName() + "': '"
-                    + exception.getMessage() + "'.");
+            log.debug("Fatal error occurred during validation of XML file '{}': '{}'.", xmlFile.getFileName(),
+                exception.getMessage());
             errors.add(exception);
         }
     }

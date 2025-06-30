@@ -86,7 +86,11 @@ public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRu
             };
             schemaFactory.setResourceResolver(resolver);
         }
-
+        // Always add classpath resolver as a fallback
+        schemaFactory.setResourceResolver(
+            new ClasspathResourceResolver()
+        );
+        
         // Create the validator using the XSD.
         final String entryPointXsd = "src/main/resources/xsd/sbr.gov.au/taxonomy/sbr_au_reports/sprstrm/sprcnt/sprcnt_0001/sprcnt.0001.conttrans.request.02.02.report.xsd";
         final Schema schema = schemaFactory.newSchema(new File(entryPointXsd));

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.ls.LSInput;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -33,36 +34,58 @@ public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRu
 
     @Override
     public void run(final String... args) throws Exception {
-        // Compute path to the XBRL payload to be validated.
-        validateFile(Path.of("src/main/resources/xbrl/xbrl_001_valid.xml"));
-        validateFile(Path.of("src/main/resources/xbrl/xbrl_002_invalid-against-Schematron.xml"));
-        validateFile(Path.of("src/main/resources/xbrl/xbrl_003_invalid-against-XSD.xml"));
+        final boolean withCatalog = Boolean.parseBoolean(args[0]);
+        runAgainstAllFiles(withCatalog);
     }
 
-    private static void validateFile(final Path xbrlPath) throws SAXException, IOException {
+    private static void runAgainstAllFiles(final boolean withCatalog) throws SAXException, IOException {
+        final String withInternetSt;
+        if (StringUtils.hasText(System.getProperty("java.security.policy"))) {
+            withInternetSt = "without internet";
+        } else {
+            withInternetSt = "with internet";
+        }
+        final String withCatalogSt;
+        if (withCatalog) {
+            withCatalogSt = "with the catalog";
+        } else {
+            withCatalogSt = "without the catalog";
+        }
+
+        log.info("Running {} and {}.", withInternetSt, withCatalogSt);
+
+        // Compute path to the XBRL payload to be validated.
+        validateFile(Path.of("src/main/resources/xbrl/xbrl_001_valid.xml"), withCatalog);
+        validateFile(Path.of("src/main/resources/xbrl/xbrl_002_invalid-against-Schematron.xml"), withCatalog);
+        validateFile(Path.of("src/main/resources/xbrl/xbrl_003_invalid-against-XSD.xml"), withCatalog);
+    }
+
+    private static void validateFile(final Path xbrlPath, final boolean withCatalog) throws SAXException, IOException {
         log.info("========== {} ==========", xbrlPath);
 
         // Create the schema factory.
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
         // Tell the schema factory to use a catalog and resource resolver to use local XSD files.
-        final String[] catalogs = {"src/main/resources/xsd/catalog.xml"};
-        final XMLCatalogResolver resolver = new XMLCatalogResolver(catalogs) {
-            @Override
-            public LSInput resolveResource(
-                final String type,
-                final String namespaceURI,
-                final String publicId,
-                final String systemId,
-                final String baseURI
-            ) {
-                final LSInput lsInput = super.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
-                final String resolvedSystemId = (lsInput != null) ? lsInput.getSystemId() : "null";
-                log.debug("Attempted to resolve '{}' to '{}'.", systemId, resolvedSystemId);
-                return lsInput;
-            }
-        };
-        schemaFactory.setResourceResolver(resolver);
+        if (withCatalog) {
+            final String[] catalogs = {"src/main/resources/xsd/catalog.xml"};
+            final XMLCatalogResolver resolver = new XMLCatalogResolver(catalogs) {
+                @Override
+                public LSInput resolveResource(
+                    final String type,
+                    final String namespaceURI,
+                    final String publicId,
+                    final String systemId,
+                    final String baseURI
+                ) {
+                    final LSInput lsInput = super.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
+                    final String resolvedSystemId = (lsInput != null) ? lsInput.getSystemId() : "null";
+                    log.debug("Attempted to resolve '{}' to '{}'.", systemId, resolvedSystemId);
+                    return lsInput;
+                }
+            };
+            schemaFactory.setResourceResolver(resolver);
+        }
 
         // Create the validator using the XSD.
         final String entryPointXsd = "src/main/resources/xsd/sbr.gov.au/taxonomy/sbr_au_reports/sprstrm/sprcnt/sprcnt_0001/sprcnt.0001.conttrans.request.02.02.report.xsd";

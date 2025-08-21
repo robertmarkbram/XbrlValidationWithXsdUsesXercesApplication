@@ -75,11 +75,40 @@ public class XbrlValidationWithXsdUsesXercesApplication implements CommandLineRu
         }
 
         log.info("Running {} and {}.", withInternetSt, withCatalogSt);
+        Path xbrlPath = Path.of("/Users/rob.bram/home/ss/message/17088268884");
+        try {
+            Path newestFolder = java.nio.file.Files.list(xbrlPath)
+                .filter(path -> java.nio.file.Files.isDirectory(path))
+                .max((p1, p2) -> {
+                    try {
+                        return java.nio.file.Files.getLastModifiedTime(p1)
+                            .compareTo(java.nio.file.Files.getLastModifiedTime(p2));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .orElse(null);
 
+            if (newestFolder != null) {
+                java.nio.file.Files.list(newestFolder)
+                    .filter(path -> path.toString().toLowerCase().endsWith(".xml"))
+                    .forEach(xmlFile -> {
+                        try {
+                            validateFile(xmlFile, withCatalog);
+                        } catch (Exception e) {
+                            log.error("Error validating file {}: {}", xmlFile, e.getMessage());
+                        }
+                    });
+            }
+        } catch (IOException e) {
+            log.error("Error accessing path {}: {}", xbrlPath, e.getMessage());
+        }
+        
         // Compute path to the XBRL payload to be validated.
-        validateFile(Path.of("src/main/resources/xbrl/xbrl_001_valid.xml"), withCatalog);
-        validateFile(Path.of("src/main/resources/xbrl/xbrl_002_invalid-against-Schematron.xml"), withCatalog);
-        validateFile(Path.of("src/main/resources/xbrl/xbrl_003_invalid-against-XSD.xml"), withCatalog);
+//        validateFile(Path.of("src/main/resources/xbrl/xbrl_001_valid.xml"), withCatalog);
+//        validateFile(Path.of("src/main/resources/xbrl/xbrl_001_valid.xml"), withCatalog);
+//        validateFile(Path.of("src/main/resources/xbrl/xbrl_002_invalid-against-Schematron.xml"), withCatalog);
+//        validateFile(Path.of("src/main/resources/xbrl/xbrl_003_invalid-against-XSD.xml"), withCatalog);
     }
 
     /**
